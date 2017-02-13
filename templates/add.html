@@ -16,9 +16,11 @@ Machine Learning -- Add Image
         <form action="" method="post">
             <article>
                 <p>
-                    Please enter your Image here: <input type="file" accept="image/*;capture=camera">
-
+                    Please enter your Image here: <input  type="file" id="image2" name="image">
                 </p>
+{#                  <p>#}
+{#                    Please enter your Text Image here: <input type="text" id="image" name="image">#}
+{#                </p>#}
                 <p>
                     <button type="submit">Submit</button>
                 </p>
@@ -37,14 +39,14 @@ if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
         video.play();
     });
 }
-
 var canvas = document.getElementById('canvas');
-var context = canvas.getContext('2d');
-var video = document.getElementById('video');
-
-// Trigger photo take
+    var context = canvas.getContext('2d');
+    var video = document.getElementById('video');
+  //  var image2 = document.getElementById('image2');
+    // Trigger photo take
 document.getElementById("snap").addEventListener("click", function() {
 	context.drawImage(video, 0, 0, 640, 480);
+  //  image2.value= image2.getContext('2d').drawImage(video, 0, 0, 640, 480)
 });
     </script>
 {% endblock %}
