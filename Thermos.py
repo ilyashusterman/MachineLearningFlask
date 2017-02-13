@@ -1,20 +1,25 @@
-from mimetypes import init
-from logging import DEBUG
+# from logging import DEBUG
 from datetime import datetime
 from flask import Flask, render_template, request, flash, redirect, url_for
+from forms import ImageForm
 
 app = Flask(__name__)
-app.logger.setLevel(DEBUG)
-
+# app.logger.setLevel(DEBUG)
 images = []
+app.config['SECRET_KEY'] = '\x87\x98g\xc3\xbd\xd8r\x99\xb9\x85p\xc1\xca8p\x94\xe5\xf0\x82\x89\xb6p,\xe1'
 
 
-def store_image(image):
+def store_image(image,description):
     images.append(dict(
         image=image,
+        description=description,
         user="ilya",
         date=datetime.utcnow()
     ))
+
+
+def new_images(num):
+    return sorted(images, key=lambda bm: bm['date'], reverse=True)[:num]
 
 
 class User:
@@ -34,20 +39,25 @@ def test():
 @app.route('/')
 @app.route('/index')
 def index():
-    return render_template('index.html', title="Title passed from view to template",
+    return render_template('index.html', new_images=new_images(5), title="Title passed from view to template",
                            text="Text passed from view to template", user=User("ilya", "shusterman"))
 
 
 @app.route('/add', methods=['GET', 'POST'])
 def add():
-    if request.method == "POST":
-        image = request.form['image']
-        file_image = request.files
-        store_image(image)
-        store_image(file_image)
-        app.logger.debug('stored images : ' + image)
+    form = ImageForm(request.form)
+    if request.method == 'POST' and form.validate():
+        image = form.image
+        description = form.description.data
+        store_image(image, description)
+        #image = request.form['image']
+        # file_image = request.files
+        # store_image(file_image)
+        # app.logger.debug('stored images : ' + image)
+
+        flash("Stored '{}'".format(description))
         return redirect(url_for('index'))
-    return render_template('add.html')
+    return render_template('add.html', form=form)
 
 
 @app.errorhandler(404)
